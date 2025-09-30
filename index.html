@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Carta — 2 años</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Pacifico&display=swap" rel="stylesheet">
   <style>
@@ -129,19 +129,23 @@
 
     @media (max-width: 768px) {
       .fotos-flotantes {
-        position: relative;  /* ya no flotan */
-        width: 100%;
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* dos columnas */
+        position: relative !important;  /* fuerza a resetear */
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100% !important;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 12px;
         margin-top: 20px;
         pointer-events: auto;
       }
 
       .fotos-flotantes .foto {
-        position: static;   /* se colocan en flujo normal */
-        width: 100%;        /* cada una ocupa su celda */
-        max-width: 160px;   /* límite para no ser gigantes */
+        position: static !important;
+        width: 45% !important;    /* 2 fotos por fila */
+        max-width: 180px;
         transform: none !important;
       }
     }
