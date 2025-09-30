@@ -14,11 +14,15 @@
       --muted:#6b6b6b;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;}
+    html,body{margin:0;font-family:Montserrat,system-ui,Arial;}
     body{
       background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      display:flex;align-items:center;justify-content:center;padding:32px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:32px;
       position:relative;
+      min-height:100vh;
     }
 
     /* lockscreen estilo hacker */
@@ -96,16 +100,16 @@
     /* Polaroids flotantes */
     .fotos-flotantes {
       position: absolute;
-      top: 40px;   /* empieza cerca de arriba */
-      right: 20px; /* pegado a la derecha */
+      top: 40px;
+      right: 20px;
       bottom: 40px;
-      width: 40%;  /* más ancho, para que las fotos respiren */
+      width: 40%;
       pointer-events: none;
     }
 
     .fotos-flotantes .foto {
       position: absolute;
-      width: 250px;  /* más grandes */
+      width: 250px;
       border-radius: 16px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.2);
       transition: transform 0.3s ease;
@@ -115,21 +119,28 @@
       transform: scale(1.1) rotate(2deg);
     }
 
-    /* posiciones individuales, dispersas */
+    /* posiciones individuales */
     .f1 { top: 20px; left: 30px; transform: rotate(-6deg); }
     .f2 { top: 200px; right: 40px; transform: rotate(5deg); }
     .f3 { bottom: 180px; left: 20px; transform: rotate(-4deg); }
     .f4 { bottom: 40px; right: 60px; transform: rotate(7deg); }
 
-    @keyframes flotar {
-      0% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-      50% { transform: translateY(-15px) rotate(var(--rot, 0deg)); }
-      100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-    }
-
+    /* Ajustes móviles */
     @media (max-width: 768px) {
+      body {
+        display: block !important;
+        padding: 16px !important;
+      }
+      .card {
+        max-width: 100% !important;
+        padding: 24px !important;
+      }
+      .mensaje {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+      }
       .fotos-flotantes {
-        position: relative !important;  /* fuerza a resetear */
+        position: relative !important;
         top: auto !important;
         right: auto !important;
         bottom: auto !important;
@@ -141,19 +152,42 @@
         margin-top: 20px;
         pointer-events: auto;
       }
-
       .fotos-flotantes .foto {
         position: static !important;
-        width: 45% !important;    /* 2 fotos por fila */
+        width: 45% !important;
         max-width: 180px;
         transform: none !important;
       }
     }
 
-    @media(max-width:880px){
-      body{flex-direction:column;}
-      .fotos{position:relative;right:auto;top:auto;width:100%;height:auto;margin-top:20px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
-      .foto{position:relative;top:auto;left:auto;animation:none;}
+    /* Solo en Safari/iOS */
+    @supports (-webkit-touch-callout: none) {
+      .fotos-flotantes {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        display: block !important;
+        z-index: -1 !important;  /* 👈 manda las fotos al fondo */
+        opacity: 0.35;           /* 👈 que no opaquen el texto */
+      }
+
+      .fotos-flotantes .foto {
+        position: absolute !important;
+        width: 200px !important;   /* tamaño ajustado */
+        border-radius: 16px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+      }
+
+      /* Reacomodamos posiciones para que se vean repartidas */
+      .f1 { top: 5%; left: 10%; }
+      .f2 { top: 25%; right: 15%; }
+      .f3 { bottom: 25%; left: 20%; }
+      .f4 { bottom: 10%; right: 10%; }
     }
   </style>
 </head>
@@ -198,7 +232,6 @@
 
   <script>
     const PASSWORD = "basededatos";
-
     function checkPassword(){
       const input = document.getElementById("clave").value;
       if(input === PASSWORD){
@@ -214,8 +247,6 @@
         document.getElementById("error").style.display = "block";
       }
     }
-
-    // descargar HTML actual
     function descargarHTML(){
       const html = '<!doctype html>\n' + document.documentElement.outerHTML;
       const blob = new Blob([html],{type:'text/html'});
