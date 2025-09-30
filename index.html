@@ -18,10 +18,11 @@
     body{
       background:linear-gradient(135deg,var(--bg1),var(--bg2));
       display:flex;align-items:center;justify-content:center;padding:32px;
-      position:relative;
+      position:relative; min-height:100vh;
+      -webkit-font-smoothing:antialiased;
     }
 
-    /* lockscreen estilo hacker */
+    /* lockscreen estilo hacker (sin cambios) */
     #lockscreen {
       position:fixed;top:0;left:0;width:100%;height:100%;
       display:flex;align-items:center;justify-content:center;
@@ -61,7 +62,8 @@
     }
     @keyframes blink {0%,100%{opacity:1}50%{opacity:0}}
 
-    #contenido {opacity: 0;transition: opacity 1s ease;}
+    /* -------------- contenido -------------- */
+    #contenido {opacity: 0;transition: opacity 1s ease; width:100%; max-width:1100px; position:relative;}
     #contenido.visible {opacity: 1;}
 
     .card{
@@ -69,7 +71,8 @@
       border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.12);
       padding:40px 48px;
       position: relative;
-      z-index: 1; /* aseguramos que esté encima de las fotos */
+      z-index: 2; /* que quede siempre encima del fondo de fotos */
+      backdrop-filter: none;
     }
 
     .title{font-family:Pacifico, cursive;font-size:40px;color:var(--accent);margin:0}
@@ -95,7 +98,7 @@
     .controls{margin-top:22px;display:flex;gap:12px}
     button.ghost{background:transparent;color:var(--accent);border:2px solid rgba(255,107,129,0.18);padding:10px 14px;border-radius:10px;cursor:pointer}
 
-    /* Polaroids flotantes normales (desktop/android) */
+    /* ---------------- Fotos (contenedor fuera de #contenido) ---------------- */
     .fotos-flotantes {
       position: absolute;
       top: 40px;
@@ -103,81 +106,98 @@
       bottom: 40px;
       width: 40%;
       pointer-events: none;
+      z-index: 1; /* debajo de la tarjeta (.card z-index:2) */
     }
 
-    .fotos-flotantes .foto {
+    .foto {
       position: absolute;
       width: 250px;
       border-radius: 16px;
       box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease;
+      transition: transform 0.35s ease;
+      overflow: hidden;
+      background: #fff;
+      animation: flotar 4s ease-in-out infinite;
     }
 
-    .fotos-flotantes .foto:hover {
-      transform: scale(1.1) rotate(2deg);
+    .foto img {
+      width:100%;
+      height: 200px;
+      object-fit: cover;
+      display:block;
     }
 
-    /* posiciones */
-    .f1 { top: 20px; left: 30px; transform: rotate(-6deg); }
-    .f2 { top: 200px; right: 40px; transform: rotate(5deg); }
-    .f3 { bottom: 180px; left: 20px; transform: rotate(-4deg); }
-    .f4 { bottom: 40px; right: 60px; transform: rotate(7deg); }
+    .foto:hover { transform: scale(1.06) rotate(2deg); }
 
-    /* Vista móvil genérica */
+    /* posiciones desktop */
+    .f1 { top: 10px; left: 20px; transform: rotate(-6deg); animation-delay: 0s; }
+    .f2 { top: 200px; right: 40px; transform: rotate(5deg); animation-delay: 0.3s; }
+    .f3 { bottom: 200px; left: 30px; transform: rotate(-4deg); animation-delay: 0.6s; }
+    .f4 { bottom: 40px; right: 60px; transform: rotate(7deg); animation-delay: 0.9s; }
+
+    @keyframes flotar {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(0deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+
+    /* ---------------- Mobile: fotos como fondo DETRÁS (iOS + Android) ---------------- */
     @media (max-width: 768px) {
-      .fotos-flotantes {
-        position: relative !important;
-        top: auto !important;
-        right: auto !important;
-        bottom: auto !important;
-        width: 100% !important;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 12px;
-        margin-top: 20px;
-        pointer-events: auto;
-      }
+      /* fuerza layout vertical y evita recortes */
+      body { display:block !important; padding:16px !important; }
+      #contenido { max-width:100% !important; }
+      .card { padding:24px !important; max-width:100%; margin:0 auto; }
 
-      .fotos-flotantes .foto {
-        position: static !important;
-        width: 45% !important;
-        max-width: 180px;
-        transform: none !important;
-      }
-    }
-
-    /* SOLO en iOS: fotos como fondo */
-    @media (max-width: 768px) {
+      /* convertimos el contenedor de fotos en fondo a pantalla completa */
       .fotos-flotantes {
         position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
+        inset: 0 !important;           /* top:0; right:0; bottom:0; left:0; */
         width: 100% !important;
         height: 100% !important;
         margin: 0 !important;
         display: block !important;
-        z-index: -1 !important;
-        opacity: 0.35;
+        z-index: 0 !important;         /* detrás de .card (z-index:2) */
+        opacity: 0.30 !important;      /* que no tapen la carta */
+        pointer-events: none !important;
       }
 
-      .fotos-flotantes .foto {
-        position: absolute !important;
+      /* fotos más pequeñas en el fondo */
+      .foto {
         width: 200px !important;
-        border-radius: 16px;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+        height: auto !important;
       }
 
-      .f1 { top: 5%; left: 10%; }
-      .f2 { top: 25%; right: 15%; }
-      .f3 { bottom: 25%; left: 20%; }
-      .f4 { bottom: 10%; right: 10%; }
+      /* distribuimos porcentualmente para que se vean como collage */
+      .f1 { top: 6% !important; left: 6% !important; transform: rotate(-6deg) !important; }
+      .f2 { top: 26% !important; right: 10% !important; transform: rotate(4deg) !important; }
+      .f3 { bottom: 24% !important; left: 12% !important; transform: rotate(-4deg) !important; }
+      .f4 { bottom: 8% !important; right: 8% !important; transform: rotate(6deg) !important; }
+
+      /* opcional: que la tarjeta tenga un fondo levemente translúcido + blur para mejorar lectura */
+      .card {
+        background: rgba(255,255,255,0.92);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+      }
+    }
+
+    /* responsive extra: pantallas muy pequeñas */
+    @media (max-width: 420px) {
+      .foto { width: 160px !important; }
+      .title { font-size: 32px !important; }
+      .mensaje { font-size: 13px !important; line-height:1.45 !important; }
     }
   </style>
 </head>
 <body>
+  <!-- Fotos fuera de #contenido: esto ayuda que el z-index funcione igual en todos los navegadores -->
+  <div class="fotos-flotantes" aria-hidden="true">
+    <div class="foto f1"><img src="./imagenes/IMG_3466.jpg" alt="Foto 1"></div>
+    <div class="foto f2"><img src="./imagenes/IMG_3251.jpg" alt="Foto 2"></div>
+    <div class="foto f3"><img src="./imagenes/IMG_3508.jpg" alt="Foto 3"></div>
+    <div class="foto f4"><img src="./imagenes/IMG_2078.jpg" alt="Foto 4"></div>
+  </div>
+
   <!-- Pantalla de contraseña -->
   <div id="lockscreen">
     <div class="console">
@@ -190,8 +210,7 @@
   </div>
 
   <!-- Contenido de la carta -->
-  <div id="contenido" style="display:none;width:100%;">
-
+  <div id="contenido" style="display:none;">
     <article class="card" role="main">
       <h1 class="title">¡Feliz 2º aniversario!</h1>
       <div class="fecha">Fecha: 30 de septiembre del 2025</div>
@@ -204,16 +223,9 @@
       <div class="firma">Con todo mi amor, <br> Sebastian Campos </div>
 
       <div class="controls">
-        <button class="ghost" onclick="descargarHTML()">Si le picas aquí descargas la carta para siempre.</button>
+        <button class="ghost" onclick="descargarHTML()">Si le picas aquí descargas la carta para siempre nada mas sin imagenes porq no soy tan pro.</button>
       </div>
     </article>
-
-    <div class="fotos-flotantes">
-        <img src="./imagenes/IMG_3466.jpg" alt="Foto 1" class="foto f1">
-        <img src="./imagenes/IMG_3251.jpg" alt="Foto 2" class="foto f2">
-        <img src="./imagenes/IMG_3508.jpg" alt="Foto 3" class="foto f3">
-        <img src="./imagenes/IMG_2078.jpg" alt="Foto 4" class="foto f4">
-    </div>
   </div>
 
   <script>
