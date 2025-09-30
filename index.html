@@ -112,7 +112,7 @@
     }
 
     .fotos-flotantes .foto:hover {
-      transform: scale(1.08) rotate(2deg);
+      transform: scale(1.1) rotate(2deg);
     }
 
     /* posiciones individuales, dispersas */
@@ -125,6 +125,25 @@
       0% { transform: translateY(0) rotate(var(--rot, 0deg)); }
       50% { transform: translateY(-15px) rotate(var(--rot, 0deg)); }
       100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+    }
+
+    @media (max-width: 768px) {
+      .fotos-flotantes {
+        position: relative;  /* ya no flotan */
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* dos columnas */
+        gap: 12px;
+        margin-top: 20px;
+        pointer-events: auto;
+      }
+
+      .fotos-flotantes .foto {
+        position: static;   /* se colocan en flujo normal */
+        width: 100%;        /* cada una ocupa su celda */
+        max-width: 160px;   /* límite para no ser gigantes */
+        transform: none !important;
+      }
     }
 
     @media(max-width:880px){
