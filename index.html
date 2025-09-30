@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carta — 2 años</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#FFDDE1;
+      --bg2:#FFF1F6;
+      --card:#ffffff;
+      --accent:#FF6B81;
+      --muted:#6b6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;}
+    body{
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;align-items:center;justify-content:center;padding:32px;
+      position:relative;
+    }
+
+    /* lockscreen estilo hacker */
+    #lockscreen {
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at center,#000000 0%,#0a0a0a 100%);
+      font-family:'Courier New', monospace;
+      color:#00ff9f;
+      z-index:9999;
+      opacity:1;
+      transition:opacity 1s ease;
+    }
+    #lockscreen.fade-out {opacity:0;pointer-events:none;}
+    #lockscreen .console {
+      background:rgba(0,0,0,0.85);
+      padding:30px 40px;
+      border:2px solid #00ff9f;
+      border-radius:8px;
+      box-shadow:0 0 20px rgba(0,255,159,0.6);
+      text-align:center;
+      width:300px;
+    }
+    #lockscreen h2 {margin:0 0 20px 0;font-size:22px;letter-spacing:2px;color:#00ff9f;text-shadow:0 0 6px #00ff9f;}
+    #lockscreen p {margin:0 0 15px 0;font-size:14px;}
+    #lockscreen input {
+      background:#000;border:1px solid #00ff9f;color:#00ff9f;
+      font-family:'Courier New', monospace;
+      padding:10px;width:100%;text-align:center;font-size:16px;border-radius:4px;
+    }
+    #lockscreen button {
+      margin-top:15px;width:100%;
+      background:#00ff9f;color:#000;border:0;font-weight:700;font-size:16px;
+      padding:10px;border-radius:4px;cursor:pointer;transition:all 0.2s ease;
+    }
+    #lockscreen button:hover {background:#00d483;box-shadow:0 0 12px #00ff9f;}
+    #lockscreen #error {
+      margin-top:12px;font-weight:700;letter-spacing:1px;text-shadow:0 0 6px #ff3b3b;
+      animation:blink 1s infinite;
+    }
+    @keyframes blink {0%,100%{opacity:1}50%{opacity:0}}
+
+    #contenido {opacity: 0;transition: opacity 1s ease;}
+    #contenido.visible {opacity: 1;}
+
+    .card{
+      width:100%;max-width:700px;background:var(--card);
+      border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.12);
+      padding:40px 48px;
+    }
+
+    .title{font-family:Pacifico, cursive;font-size:40px;color:var(--accent);margin:0}
+    .fecha{margin-top:12px;color:#a57a86;font-size:13px}
+
+    .mensaje {
+      margin-top: 20px;
+      line-height: 1.5;
+      color: #333;
+      font-size: 14px;
+      text-align: justify;
+      white-space: pre-wrap;
+      max-width: 95%;
+    }
+
+    .firma {
+      margin-top: 20px;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 15px;
+    }
+
+    .controls{margin-top:22px;display:flex;gap:12px}
+    button.ghost{background:transparent;color:var(--accent);border:2px solid rgba(255,107,129,0.18);padding:10px 14px;border-radius:10px;cursor:pointer}
+
+    /* Polaroids flotantes */
+    .fotos-flotantes {
+      position: absolute;
+      top: 40px;   /* empieza cerca de arriba */
+      right: 20px; /* pegado a la derecha */
+      bottom: 40px;
+      width: 40%;  /* más ancho, para que las fotos respiren */
+      pointer-events: none;
+    }
+
+    .fotos-flotantes .foto {
+      position: absolute;
+      width: 250px;  /* más grandes */
+      border-radius: 16px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .fotos-flotantes .foto:hover {
+      transform: scale(1.08) rotate(2deg);
+    }
+
+    /* posiciones individuales, dispersas */
+    .f1 { top: 20px; left: 30px; transform: rotate(-6deg); }
+    .f2 { top: 200px; right: 40px; transform: rotate(5deg); }
+    .f3 { bottom: 180px; left: 20px; transform: rotate(-4deg); }
+    .f4 { bottom: 40px; right: 60px; transform: rotate(7deg); }
+
+    @keyframes flotar {
+      0% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+      50% { transform: translateY(-15px) rotate(var(--rot, 0deg)); }
+      100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+    }
+
+    @media(max-width:880px){
+      body{flex-direction:column;}
+      .fotos{position:relative;right:auto;top:auto;width:100%;height:auto;margin-top:20px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
+      .foto{position:relative;top:auto;left:auto;animation:none;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla de contraseña -->
+  <div id="lockscreen">
+    <div class="console">
+      <h2>ACCESS REQUIRED</h2>
+      <p>> Introduce el código de acceso:</p>
+      <input type="password" id="clave" placeholder="********" />
+      <button onclick="checkPassword()">ENTER</button>
+      <p id="error" style="color:#ff3b3b;display:none;">ACCESS DENIED</p>
+    </div>
+  </div>
+
+  <!-- Contenido de la carta -->
+  <div id="contenido" style="display:none;width:100%;">
+
+    <article class="card" role="main">
+      <h1 class="title">¡Feliz 2º aniversario!</h1>
+      <div class="fecha">Fecha: 30 de septiembre del 2025</div>
+
+      <div class="mensaje" id="mensaje">
+          Mi vida,
+          Hola, espero que para cuando estés leyendo esto ya tuviéramos el mejor aniversario del mundo!!! Espero también que te estés cagando por la primera carta porque pues soy el mejor novio del mundo, siento que siempre he batallado para escribirte cartas porque siento que faltan palabras para poder describir la visión que tengo de ti, eres el amor de mi vida, mi mejor amiga y mi prioridad número uno. También espero que te hayan gustado las flores, creo que me la rifé y si no, me sirve de experiencia para el resto de la vida que tenemos juntos, te amo con todo mi corazón, tú sabes que no me puedo imaginar con nadie más y espero que el año que viene también sea igual de genial que este por el que estamos festejando hoy, no puedo esperar por loquear en Halloween, festejarte tu cumpleaños, ver películas navideñas, empezar el 2026 contigo, tener otra cita del 14 igual de bonita que la de este año, MIS REGALOS EN MI CUMPLE y darte flores amarillas, pero yo se que otro año no va significar mas que puras cosas buenas, pero incluso con todos esos rough patches, quiero pasar otro año de mi vida contigo.
+      </div>
+
+      <div class="firma">Con todo mi amor, <br> Sebastian Campos </div>
+
+      <div class="controls">
+        <button class="ghost" onclick="descargarHTML()">Si le picas aquí descargas la carta para siempre.</button>
+      </div>
+    </article>
+
+    <div class="fotos-flotantes">
+        <img src="IMG_3466.png" alt="Foto 1" class="foto f1">
+        <img src="IMG_3251.png" alt="Foto 2" class="foto f2">
+        <img src="IMG_3508.png" alt="Foto 3" class="foto f3">
+        <img src="IMG_2078.png" alt="Foto 4" class="foto f4">
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD = "basededatos";
+
+    function checkPassword(){
+      const input = document.getElementById("clave").value;
+      if(input === PASSWORD){
+        const lock = document.getElementById("lockscreen");
+        lock.classList.add("fade-out");
+        setTimeout(() => {
+          lock.style.display = "none";
+          const carta = document.getElementById("contenido");
+          carta.style.display = "block";
+          setTimeout(() => carta.classList.add("visible"), 50);
+        }, 800);
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+
+    // descargar HTML actual
+    function descargarHTML(){
+      const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html],{type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'carta_2_anios.html';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
