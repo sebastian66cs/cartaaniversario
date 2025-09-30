@@ -14,15 +14,14 @@
       --muted:#6b6b6b;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Montserrat,system-ui,Arial;}
+    html,body{margin:0;font-family:Montserrat,system-ui,Arial;}
     body{
       background:linear-gradient(135deg,var(--bg1),var(--bg2));
       display:flex;align-items:center;justify-content:center;padding:32px;
-      position:relative; min-height:100vh;
-      -webkit-font-smoothing:antialiased;
+      position:relative;min-height:100vh;
     }
 
-    /* lockscreen estilo hacker (sin cambios) */
+    /* lockscreen */
     #lockscreen {
       position:fixed;top:0;left:0;width:100%;height:100%;
       display:flex;align-items:center;justify-content:center;
@@ -39,12 +38,10 @@
       padding:30px 40px;
       border:2px solid #00ff9f;
       border-radius:8px;
-      box-shadow:0 0 20px rgba(0,255,159,0.6);
       text-align:center;
       width:300px;
     }
-    #lockscreen h2 {margin:0 0 20px 0;font-size:22px;letter-spacing:2px;color:#00ff9f;text-shadow:0 0 6px #00ff9f;}
-    #lockscreen p {margin:0 0 15px 0;font-size:14px;}
+    #lockscreen h2 {margin:0 0 20px 0;font-size:22px;color:#00ff9f;}
     #lockscreen input {
       background:#000;border:1px solid #00ff9f;color:#00ff9f;
       font-family:'Courier New', monospace;
@@ -53,208 +50,103 @@
     #lockscreen button {
       margin-top:15px;width:100%;
       background:#00ff9f;color:#000;border:0;font-weight:700;font-size:16px;
-      padding:10px;border-radius:4px;cursor:pointer;transition:all 0.2s ease;
+      padding:10px;border-radius:4px;cursor:pointer;
     }
-    #lockscreen button:hover {background:#00d483;box-shadow:0 0 12px #00ff9f;}
-    #lockscreen #error {
-      margin-top:12px;font-weight:700;letter-spacing:1px;text-shadow:0 0 6px #ff3b3b;
-      animation:blink 1s infinite;
-    }
-    @keyframes blink {0%,100%{opacity:1}50%{opacity:0}}
+    #lockscreen #error {margin-top:12px;color:#ff3b3b;display:none;}
 
-    /* -------------- contenido -------------- */
-    #contenido {opacity: 0;transition: opacity 1s ease; width:100%; max-width:1100px; position:relative;}
-    #contenido.visible {opacity: 1;}
+    /* contenido */
+    #contenido {opacity:0;transition:opacity 1s ease;width:100%;max-width:1100px;position:relative;}
+    #contenido.visible {opacity:1;}
 
     .card{
       width:100%;max-width:700px;background:var(--card);
       border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.12);
       padding:40px 48px;
-      position: relative;
-      z-index: 2; /* que quede siempre encima del fondo de fotos */
-      backdrop-filter: none;
+      position:relative;z-index:2;
     }
 
-    .title{font-family:Pacifico, cursive;font-size:40px;color:var(--accent);margin:0}
+    .title{font-family:Pacifico,cursive;font-size:40px;color:var(--accent);margin:0}
     .fecha{margin-top:12px;color:#a57a86;font-size:13px}
-
-    .mensaje {
-      margin-top: 20px;
-      line-height: 1.5;
-      color: #333;
-      font-size: 14px;
-      text-align: justify;
-      white-space: pre-wrap;
-      max-width: 95%;
-    }
-
-    .firma {
-      margin-top: 20px;
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 15px;
-    }
-
+    .mensaje{margin-top:20px;line-height:1.5;color:#333;font-size:14px;text-align:justify;white-space:pre-wrap;}
+    .firma{margin-top:20px;font-weight:600;color:var(--accent);font-size:15px;}
     .controls{margin-top:22px;display:flex;gap:12px}
     button.ghost{background:transparent;color:var(--accent);border:2px solid rgba(255,107,129,0.18);padding:10px 14px;border-radius:10px;cursor:pointer}
 
-    /* ---------------- Fotos (contenedor fuera de #contenido) ---------------- */
-    .fotos-flotantes {
-      position: absolute;
-      top: 40px;
-      right: 20px;
-      bottom: 40px;
-      width: 40%;
-      pointer-events: none;
-      z-index: 1; /* debajo de la tarjeta (.card z-index:2) */
+    /* fotos flotantes */
+    .fotos-flotantes{
+      position:absolute;inset:0;width:100%;height:100%;
+      pointer-events:none;z-index:1;opacity:.25;
     }
+    .foto{position:absolute;width:240px;border-radius:16px;overflow:hidden;}
+    .foto img{width:100%;height:200px;object-fit:cover;display:block;}
+    .f1{top:10%;left:5%;transform:rotate(-6deg);}
+    .f2{top:25%;right:10%;transform:rotate(5deg);}
+    .f3{bottom:25%;left:15%;transform:rotate(-4deg);}
+    .f4{bottom:10%;right:8%;transform:rotate(6deg);}
 
-    .foto {
-      position: absolute;
-      width: 250px;
-      border-radius: 16px;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
-      transition: transform 0.35s ease;
-      overflow: hidden;
-      background: #fff;
-      animation: flotar 4s ease-in-out infinite;
-    }
-
-    .foto img {
-      width:100%;
-      height: 200px;
-      object-fit: cover;
-      display:block;
-    }
-
-    .foto:hover { transform: scale(1.06) rotate(2deg); }
-
-    /* posiciones desktop */
-    .f1 { top: 10px; left: 20px; transform: rotate(-6deg); animation-delay: 0s; }
-    .f2 { top: 200px; right: 40px; transform: rotate(5deg); animation-delay: 0.3s; }
-    .f3 { bottom: 200px; left: 30px; transform: rotate(-4deg); animation-delay: 0.6s; }
-    .f4 { bottom: 40px; right: 60px; transform: rotate(7deg); animation-delay: 0.9s; }
-
-    @keyframes flotar {
-      0% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-14px) rotate(0deg); }
-      100% { transform: translateY(0) rotate(0deg); }
-    }
-
-    /* ---------------- Mobile: fotos como fondo DETRÁS (iOS + Android) ---------------- */
-    @media (max-width: 768px) {
-      /* fuerza layout vertical y evita recortes */
-      body { display:block !important; padding:16px !important; }
-      #contenido { max-width:100% !important; }
-      .card { padding:24px !important; max-width:100%; margin:0 auto; }
-
-      /* convertimos el contenedor de fotos en fondo a pantalla completa */
-      .fotos-flotantes {
-        position: absolute !important;
-        inset: 0 !important;           /* top:0; right:0; bottom:0; left:0; */
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0 !important;
-        display: block !important;
-        z-index: 0 !important;         /* detrás de .card (z-index:2) */
-        opacity: 0.30 !important;      /* que no tapen la carta */
-        pointer-events: none !important;
-      }
-
-      /* fotos más pequeñas en el fondo */
-      .foto {
-        width: 200px !important;
-        height: auto !important;
-      }
-
-      /* distribuimos porcentualmente para que se vean como collage */
-      .f1 { top: 6% !important; left: 6% !important; transform: rotate(-6deg) !important; }
-      .f2 { top: 26% !important; right: 10% !important; transform: rotate(4deg) !important; }
-      .f3 { bottom: 24% !important; left: 12% !important; transform: rotate(-4deg) !important; }
-      .f4 { bottom: 8% !important; right: 8% !important; transform: rotate(6deg) !important; }
-
-      /* opcional: que la tarjeta tenga un fondo levemente translúcido + blur para mejorar lectura */
-      .card {
-        background: rgba(255,255,255,0.92);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
-      }
-    }
-
-    /* responsive extra: pantallas muy pequeñas */
-    @media (max-width: 420px) {
-      .foto { width: 160px !important; }
-      .title { font-size: 32px !important; }
-      .mensaje { font-size: 13px !important; line-height:1.45 !important; }
+    /* móviles: desactivar flex del body para que no recorte */
+    @media (max-width:768px){
+      body{display:block;padding:16px;}
+      .card{padding:24px;background:rgba(255,255,255,0.92);
+        backdrop-filter:blur(4px);}
+      .foto{width:160px;}
+      .title{font-size:32px;}
     }
   </style>
 </head>
 <body>
-  <!-- Fotos fuera de #contenido: esto ayuda que el z-index funcione igual en todos los navegadores -->
-  <div class="fotos-flotantes" aria-hidden="true">
-    <div class="foto f1"><img src="./imagenes/IMG_3466.jpg" alt="Foto 1"></div>
-    <div class="foto f2"><img src="./imagenes/IMG_3251.jpg" alt="Foto 2"></div>
-    <div class="foto f3"><img src="./imagenes/IMG_3508.jpg" alt="Foto 3"></div>
-    <div class="foto f4"><img src="./imagenes/IMG_2078.jpg" alt="Foto 4"></div>
+  <div class="fotos-flotantes">
+    <div class="foto f1"><img src="./imagenes/IMG_3466.jpg" alt=""></div>
+    <div class="foto f2"><img src="./imagenes/IMG_3251.jpg" alt=""></div>
+    <div class="foto f3"><img src="./imagenes/IMG_3508.jpg" alt=""></div>
+    <div class="foto f4"><img src="./imagenes/IMG_2078.jpg" alt=""></div>
   </div>
 
-  <!-- Pantalla de contraseña -->
   <div id="lockscreen">
     <div class="console">
       <h2>ACCESS REQUIRED</h2>
-      <p>> Introduce el código de acceso:</p>
       <input type="password" id="clave" placeholder="********" />
       <button onclick="checkPassword()">ENTER</button>
-      <p id="error" style="color:#ff3b3b;display:none;">ACCESS DENIED</p>
+      <p id="error">ACCESS DENIED</p>
     </div>
   </div>
 
-  <!-- Contenido de la carta -->
   <div id="contenido" style="display:none;">
-    <article class="card" role="main">
+    <article class="card">
       <h1 class="title">¡Feliz 2º aniversario!</h1>
       <div class="fecha">Fecha: 30 de septiembre del 2025</div>
-
       <div class="mensaje" id="mensaje">
           Mi vida,
           Hola, espero que para cuando estés leyendo esto ya tuviéramos el mejor aniversario del mundo!!! Espero también que te estés cagando por la primera carta porque pues soy el mejor novio del mundo, siento que siempre he batallado para escribirte cartas porque siento que faltan palabras para poder describir la visión que tengo de ti, eres el amor de mi vida, mi mejor amiga y mi prioridad número uno. También espero que te hayan gustado las flores, creo que me la rifé y si no, me sirve de experiencia para el resto de la vida que tenemos juntos, te amo con todo mi corazón, tú sabes que no me puedo imaginar con nadie más y espero que el año que viene también sea igual de genial que este por el que estamos festejando hoy, no puedo esperar por loquear en Halloween, festejarte tu cumpleaños, ver películas navideñas, empezar el 2026 contigo, tener otra cita del 14 igual de bonita que la de este año, MIS REGALOS EN MI CUMPLE y darte flores amarillas, pero yo se que otro año no va significar mas que puras cosas buenas, pero incluso con todos esos rough patches, quiero pasar otro año de mi vida contigo.
       </div>
-
-      <div class="firma">Con todo mi amor, <br> Sebastian Campos </div>
-
+      <div class="firma">Con todo mi amor,<br>Sebastian Campos</div>
       <div class="controls">
-        <button class="ghost" onclick="descargarHTML()">Si le picas aquí descargas la carta para siempre nada mas sin imagenes porq no soy tan pro.</button>
+        <button class="ghost" onclick="descargarHTML()">Descargar carta</button>
       </div>
     </article>
   </div>
 
   <script>
-    const PASSWORD = "basededatos";
-
+    const PASSWORD="basededatos";
     function checkPassword(){
-      const input = document.getElementById("clave").value;
-      if(input === PASSWORD){
-        const lock = document.getElementById("lockscreen");
-        lock.classList.add("fade-out");
-        setTimeout(() => {
-          lock.style.display = "none";
-          const carta = document.getElementById("contenido");
-          carta.style.display = "block";
-          setTimeout(() => carta.classList.add("visible"), 50);
-        }, 800);
-      } else {
-        document.getElementById("error").style.display = "block";
-      }
+      const input=document.getElementById("clave").value;
+      if(input===PASSWORD){
+        document.getElementById("lockscreen").classList.add("fade-out");
+        setTimeout(()=>{
+          document.getElementById("lockscreen").style.display="none";
+          const carta=document.getElementById("contenido");
+          carta.style.display="block";
+          setTimeout(()=>carta.classList.add("visible"),50);
+        },800);
+      }else{document.getElementById("error").style.display="block";}
     }
-
-    // descargar HTML actual
     function descargarHTML(){
-      const html = '<!doctype html>\n' + document.documentElement.outerHTML;
-      const blob = new Blob([html],{type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'carta_2_anios.html';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const html='<!doctype html>\n'+document.documentElement.outerHTML;
+      const blob=new Blob([html],{type:'text/html'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='carta.html';
+      document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
     }
   </script>
 </body>
